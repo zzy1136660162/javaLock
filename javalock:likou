@@ -1,0 +1,59 @@
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+class Foo {
+
+    public Foo() {
+        
+    }
+    private Lock lock = new ReentrantLock();
+    private Condition condition = lock.newCondition();
+    private int state = 1;
+    public void first(Runnable printFirst) throws InterruptedException {
+        
+        // printFirst.run() outputs "first". Do not change or remove this line.
+        lock.lock();
+        try{
+         while(state!=1){
+             condition.await();
+             }
+             state++;
+             printFirst.run();   
+             condition.signalAll();
+            
+        } finally{
+            lock.unlock();
+        }
+        
+        
+    }
+
+    public void second(Runnable printSecond) throws InterruptedException {
+        lock.lock();
+        try{
+        while(state!=2){condition.await();
+             }
+            printSecond.run();    
+            condition.signalAll();
+            state++;
+            }finally{
+            lock.unlock();
+        }
+        // printSecond.run() outputs "second". Do not change or remove this line.
+        
+    }
+
+    public void third(Runnable printThird) throws InterruptedException {
+         lock.lock();
+         try{
+            while(state!=3){condition.await();
+             }
+                printThird.run(); 
+                condition.signalAll();
+                state++;
+          }finally{
+            lock.unlock();
+        }
+        // printThird.run() outputs "third". Do not change or remove this line.
+    }
+}
